@@ -16,11 +16,9 @@ num=100/255;
 % imshow(bw);
 b=getProcessedImage(medfilt2(I, [3, 3]));
 figure;
-imshow(b);
-edgeB = edge(b, 'Sobel', [], 'vertical');
 % imshow(edge(b, 'Sobel', [], 'vertical'));
 
-avgFilter = fspecial('average', [5, 5]);
+avgFilter = fspecial('average', [1, 1]);
 figure;
-imshow(filter2(avgFilter, edgeB));
+imshow(filter2(avgFilter, b));
 title('filtered');

@@ -4,7 +4,7 @@ function croppedImage = getProcessedImage(I)
    BW3 = edge(I,'Sobel', [], 'horizontal');
 
    padding  = 0;
-   fraction = 1/6;
+   fraction = 1/8;
 
    iY = round(y*fraction)+padding;
    iX = round(x*fraction)+padding;
