@@ -1,7 +1,10 @@
-function croppedImage = getProcessedImage(I)
+function croppedImage = getProcessedImage(I, direction)
+   if nargin<2
+      direction = 'vertical';
+   end
+
    [y, x] = size(I);
-   BW2 = edge(I,'Sobel', [], 'vertical');
-   BW3 = edge(I,'Sobel', [], 'horizontal');
+   BW = edge(I,'Sobel', [], direction);
 
    padding  = 0;
    fraction = 1/8;
@@ -9,17 +12,18 @@ function croppedImage = getProcessedImage(I)
    iY = round(y*fraction)+padding;
    iX = round(x*fraction)+padding;
 
-   BW2 = bwareaopen(BW2, iY);
-   BW3 = bwareaopen(BW3, iX);
-   
-%    figure;
-%    title('Vertical & Horizontal convex hull');
-%    imshowpair(bwconvhull(BW2), bwconvhull(BW3), 'montage');
+   if strcmp(direction,'vertical') ==1
+      BW = bwareaopen(BW, iY);
+   elseif strcmp(direction,'horizontal') ==1
+      BW = bwareaopen(BW, iX);
+   else
+      printf('direction %s is invalid', direction);
+   end
 
-   binaryImage = bwconvhull(BW2);
+   binaryImage = bwconvhull(BW);
    measurements = regionprops(binaryImage, 'BoundingBox');
    boundingBox = measurements.BoundingBox; 
    croppedImage = imcrop(I, boundingBox);
    [cy, cx] =size(croppedImage);
-   croppedImage = croppedImage(floor(cy/2):cy, :, 1);
+   croppedImage = croppedImage(floor(cy/2):cy, :, 1);   
 end
