@@ -41,3 +41,28 @@ edged= edge(pika,'Sobel', [], 'vertical');
 figure;
 imshow(pika);
 % imshowpair(pika, pika>255/2, 'montage');
+
+% New code
+label = bwlabel(final4);
+max(max(label));
+im1 = (label==1);
+
+subImage = cell(max(max(label)));
+for j=1:max(max(label))
+	[row, col] = find(label==j);
+	len = max(row)-min(row)+2;
+	breadth = max(col)-min(col)+2;
+	target=uint8(zeros([len breadth]));
+	sy = min(col)-1;
+	sx = min(row)-1;
+
+   for i=1:size(row, 1)
+      x = row(i, 1)-sx;
+      y = col(i, 1)-sy;
+      target(x, y)=b(row(i, 1), col(i, 1));
+   end
+   
+   subImage{j} = target;
+	mytitle=strcat('Object Number:', num2str(j));
+	figure, imshow(target); title(mytitle);
+end

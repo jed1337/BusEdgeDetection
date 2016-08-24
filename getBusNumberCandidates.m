@@ -1,7 +1,6 @@
-function newImage = getBusNumberCandidates(I, s)
+function newImage = getBusNumberCandidates(I, Bboxes)
    newImage = I;
    CC = bwconncomp(newImage);
-   Bboxes = s;
    
    minRatio = 1.5;
    maxRatio = 2.5;
@@ -17,6 +16,4 @@ function newImage = getBusNumberCandidates(I, s)
    idx = idxRatio&idxDimensions;
    
    newImage(cell2mat(CC.PixelIdxList(~idx)')) = false; %Set not above to false 
-%    newImage(cell2mat(CC.PixelIdxList(~idxRatio&idxDimensions)')) = false; %Set not above to false 
-%    newImage(cell2mat(CC.PixelIdxList(~idxRatio)')) = false; %Set not above to false 
 end
