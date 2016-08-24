@@ -1,7 +1,7 @@
 clearvars;
 close all;
 
-num = 4;
+num = 8;
 RGB = imread(strcat('Input/',num2str(num),'.jpg'));
 greyscale=rgb2gray(RGB);
 
@@ -15,12 +15,9 @@ newImage = getPreprocessedImage(b);
 LB = round(hy*hx/1250);
 UB = LB*5;
 final=bwareaopen(newImage,100);
-final2 = bwarearange(newImage, 100, 1250);
 % imshowpair(final, final2, 'montage');
 
-final2 = final;
-
-final3 = imopen(final2, oct);
+final3 = imopen(final, oct);
 final3 = imdilate(final3, se);
 s = regionprops(final3, 'BoundingBox');
 bBoxes={s(:).BoundingBox};
@@ -29,10 +26,18 @@ figure;
 imshow(final3)
 hold on
 for k = 1: size(bBoxes, 2)
-   rectangle('Position', bBoxes{k},...
-   'EdgeColor','r','LineWidth',2 )
+   rectangle('Position', bBoxes{k}, 'EdgeColor','r','LineWidth',2 )
 end
 hold off
+title('Candidate regions');
 
+final4 = getBusNumberCandidates(final3, bBoxes);
+% figure;
+% imshow(multiplyImage(final4, b));
+
+pika = multiplyImage(final4, b);
+edged= edge(pika,'Sobel', [], 'vertical');
+% imshowpair(pika, edged, 'montage');
 figure;
-imshow(getBusNumberCandidates(final3, bBoxes));
+imshow(pika);
+% imshowpair(pika, pika>255/2, 'montage');
