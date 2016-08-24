@@ -39,15 +39,22 @@ LB = round(hy*hx/1250);
 UB = LB*5;
 final=bwareaopen(H,100);
 final2 = bwarearange(H, 100, 1250);
-figure;
-imshowpair(final, final2, 'montage');
-imshow(bwarea(final2));
+
+% figure;
+% imshowpair(final, final2, 'montage');
+% imshow(bwarea(final2));
 
 % c=bwareafilt(final2, [1000, 1500])
+
 final3 = final2;
-CC = bwconncomp(final3);
-RP = regionprops(CC);
-Bboxes = {RP(:).BoundingBox};
-idx = cellfun(@(x)(x(4)/x(3))<1,Bboxes);
-final3(cell2mat(CC.PixelIdxList(~idx)')) = false; %Set not above to false 
+s = regionprops('table', final3, 'BoundingBox', ...
+   'MajorAxisLength', 'MinorAxisLength');
+bBoxes = cat(1, s.BoundingBox);% cat is used to concatenate arrays
+
+figure;
 imshow(final3)
+hold on
+for k = 1 : length(bBoxes)
+  rectangle('Position', [bBoxes(k, 1), bBoxes(k, 2), bBoxes(k, 3), bBoxes(k, 4)],...
+  'EdgeColor','r','LineWidth',2 )
+end
