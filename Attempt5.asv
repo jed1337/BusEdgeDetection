@@ -1,77 +1,51 @@
 clearvars;
 close all;
 
-num = 3;
+num = 12;
 RGB = imread(strcat('Input/',num2str(num),'.jpg'));
-I=rgb2gray(RGB);
-J=histeq(I);
+greyscale=rgb2gray(RGB);
 
-b=getProcessedImage(I);
-g=medfilt2(b,[3 3]); % Median filtering to remove noise.
-se=strel('disk',2); % Structural element (disk of radius 2) for morphological processing.
-gi=imdilate(g,se); % Dilating the gray image with the structural element.
-ge=imerode(g,se); % Eroding the gray image with structural element.
-gdiff=imsubtract(gi,ge); % Morphological Gradient for edges enhancement.
-gdiff=mat2gray(gdiff); % Converting the class to double.
-gdiff=conv2(gdiff,[1 1;1 1]); % Convolution of the double image for brightening the edges.
-gdiff=imadjust(gdiff,[0.5 0.7],[0 1],0.1); % Intensity scaling between the range 0 to 1.
-% figure;
-% imshowpair(gdiff, imdilate(gdiff, se), 'montage');
-% title('gdiff');
-gdiff = imopen(gdiff, strel('disk',1));
+se=strel('disk',2);
+oct=strel('octagon', 3);
 
-B=logical(gdiff); % Conversion of the class from double to binary. 
-% Eliminating the possible horizontal lines from the output image of regiongrow
-% that could be edges of license plate.
-er  = imerode(B, strel('line',50,0));
-er2 = imerode(B, strel('line',50,0));
-out1=logical(imsubtract(B,er));
-out1=imsubtract(out1, er2);
-% Filling all the regions of the image.
-F=imfill(out1,'holes');
-% Thinning the image to ensure character isolation.
-H=bwmorph(F,'thin',1);
-H=imerode(H,strel('line',3,90));
-% Selecting all the regions that are of pixel area more than 100.
+b=getAreaOfInterest(greyscale);
+newImage = getPreprocessedImage(b);
 
-[hy, hx] = size(H);
+[hy, hx] = size(newImage);
 LB = round(hy*hx/1250);
 UB = LB*5;
-final=bwareaopen(H,100);
-final2 = bwarearange(H, 100, 1250);
-
-% figure;
+final=bwareaopen(newImage,100);
+final2 = bwarearange(newImage, 100, 1250);
 % imshowpair(final, final2, 'montage');
-% imshow(bwarea(final2));
 
-% c=bwareafilt(final2, [1000, 1500])
+final2 = final;
 
-final3 = final2;
-s = regionprops('table', final3, 'BoundingBox', ...
-   'MajorAxisLength', 'MinorAxisLength');
-% cat is used to concatenate arrays
-bBoxes = cat(1, s.BoundingBox);
+final3 = imopen(final2, oct);
+final3 = imdilate(final3, se);
+s = regionprops(final3, 'BoundingBox');
+bBoxes = cat(1, s.BoundingBox);% cat is used to concatenate arrays
 
 figure;
 imshow(final3)
 hold on
-% plot(bBoxes(:, 1), bBoxes(:, 2), 'b*')
 for k = 1 : length(bBoxes)
   rectangle('Position', [bBoxes(k, 1), bBoxes(k, 2), bBoxes(k, 3), bBoxes(k, 4)],...
   'EdgeColor','r','LineWidth',2 )
 end
-% rectangle('Position', s.BoundingBox)
+hold off
 
+final4 = final3;
+CC = bwconncomp(final4);
+RP = regionprops(CC);
+Bboxes = {s(:).BoundingBox};
 
-% stats = regionprops('table', final3, 'Centroid', ...
-%    'MajorAxisLength', 'MinorAxisLength');
-% centres = stats.Centroid;
-% diameters = mean([stats.MajorAxisLength stats.MinorAxisLength], 2);
-% radii = diameters/2;
-% 
-% figure
-% imshow(final3)
-% hold on
-% viscircles(centres, radii);
-% % viscircles([centres(1, 1) centres(1, 2)], radii(1));
-% hold off;
+minRatio = 1.5;
+maxRatio = 3;
+idx = cellfun(@(pika) minRatio<=(pika(3)/pika(4)) ...
+   && (pika(3)/pika(4))<=maxRatio , Bboxes);
+
+final4(cell2mat(CC.PixelIdxList(~idx)')) = false; %Set not above to false 
+
+figure;
+imshow(final4)
+title('final4')
