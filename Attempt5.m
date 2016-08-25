@@ -20,31 +20,19 @@ final2 = imopen(final, oct);
 final2 = imdilate(final2, se);
 [cRegion, bBoxes] = getCandidateRegions(final2);
 imshow(cRegion);
-title('Pika');
-% s = regionprops(final2, 'BoundingBox');
-% bBoxes={s(:).BoundingBox};
-% 
-% figure;
-% imshow(final2)
-% hold on
-% for k = 1: size(bBoxes, 2)
-%    rectangle('Position', bBoxes{k}, 'EdgeColor','r','LineWidth',2 )
-% end
-% hold off
-% title('Candidate regions');
+title('Candidate Regions');
 
-% final4 = getBusNumberCandidates(final2, bBoxes);
-% figure;
-% imshow(multiplyImage(final4, b));
+final3 = getBusNumberCandidates(final2, bBoxes);
 
-% pika = multiplyImage(final4, b);
-% figure;
-% imshow(pika);
-% 
-% sImages = getSegmentedImages(final4, pika);
-% 
-% tri = sImages{3};
-% b = im2bw(tri);
-% c = imfill(b, 'holes');
+pika = multiplyImage(final3, b);
+figure,imshow(pika), title('Pika');
 
-% imshow(imfill(im2bw(sImages{4}), 'holes'))
+sImages = getSegmentedImages(final3, pika);
+
+tri = sImages{3};
+b = im2bw(tri);
+c = imfill(b, 'holes');
+
+% figure, imshow(filled), title('filed');
+[img, bBoxes] =getCandidateRegions(b); 
+figure, imshow(img), title('New candidate');

@@ -1,8 +1,12 @@
 function [newImage, bBoxes] = getCandidateRegions(I)
-s = regionprops(I, 'BoundingBox');
-bBoxes={s(:).BoundingBox};
+bBoxes=getBboxes(I);
 
-newImage = uint8(I*(255));
+if islogical(I)   % Turn the logical image to greyscale
+   newImage = uint8(I*(255));
+else              % Retain the greyscale image
+   newImage = I;
+end
+
 sukat = numel(bBoxes);
 
 f = cell(1, sukat);
