@@ -1,5 +1,6 @@
-function images = passesSegmentCount(Icell, minlpseg, maxlpseg)
-   images = cell(1, numel(Icell));
+function [imgBbox, imgOrig] = passesSegmentCount(Icell, minlpseg, maxlpseg)
+   imgBbox = cell(1, numel(Icell));
+   imgOrig = cell(1, numel(Icell));
    imagesIdx =1;
    for i = 1:numel(Icell)
       a = Icell{i};
@@ -8,10 +9,11 @@ function images = passesSegmentCount(Icell, minlpseg, maxlpseg)
       nbb = numel(bBoxes);
       
       if minlpseg <= nbb && nbb <= maxlpseg
-%          figure, imshow(a3);title(num2str(numel(bBoxes)));
-         images{imagesIdx} = a3;
+         imgBbox{imagesIdx} = a3;
+         imgOrig{imagesIdx} = a2;
          imagesIdx=imagesIdx+1;
       end
    end
-    images = images(~cellfun('isempty',images));
+    imgBbox = imgBbox(~cellfun('isempty',imgBbox));
+    imgOrig = imgOrig(~cellfun('isempty',imgOrig));
 end
