@@ -20,8 +20,8 @@ function croppedImage = getAreaOfInterest(I, direction)
       printf('direction %s is invalid', direction);
    end
 
-   binaryImage = bwconvhull(BW);
-   measurements = regionprops(binaryImage, 'BoundingBox');
+   convHull = bwconvhull(BW);
+   measurements = regionprops(convHull, 'BoundingBox');
    boundingBox = measurements.BoundingBox; 
    croppedImage = imcrop(I, boundingBox);
    [cy, cx] =size(croppedImage);
