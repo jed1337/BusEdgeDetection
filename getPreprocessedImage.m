@@ -1,4 +1,7 @@
 function newImage = getPreprocessedImage(I, se)
+% Code from  Rehan Qadir
+% https://www.mathworks.com/matlabcentral/fileexchange/40426-vehicle-number-plate-recognition?requestedDomain=www.mathworks.com
+
    if nargin<2
       se=strel('disk',2); % Structural element (disk of radius 2) for morphological processing.
    end

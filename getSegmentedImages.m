@@ -1,7 +1,6 @@
 function sImages= getSegmentedImages(candidateAreas, I)
    label = bwlabel(candidateAreas);
    ml = max(max(label));
-%    im1 = (label==1);
 
    sImages = cell(ml);
    for j=1:ml
@@ -19,10 +18,7 @@ function sImages= getSegmentedImages(candidateAreas, I)
       end
 
       sImages{j} = target;
-%       mytitle=strcat('Object Number:', num2str(j));
-%       figure, imshow(target); title(mytitle);
    end
    
-%    Removes empty elements
    sImages = sImages(~cellfun(@isempty, sImages));
 end
